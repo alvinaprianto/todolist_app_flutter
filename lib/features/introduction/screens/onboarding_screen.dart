@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/welcome_screen.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../widgets/onboarding_widget.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -38,6 +38,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  final FlutterSecureStorage storage = FlutterSecureStorage();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -52,7 +54,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         leadingWidth: 400,
         leading: GestureDetector(
           onTap: () {
-            _pageController.jumpToPage(imgOnboardList.length);
+            storage.write(key: "isFirstRun", value: "false");
+            Navigator.of(context).pushReplacementNamed("/welcomescreen");
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 20, top: 10),
@@ -112,7 +115,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   GestureDetector(
                       onTap: () {
                         if (_currentPage == imgOnboardList.length - 1) {
-                          Navigator.pushNamed(context, WelcomeScreen.routeName);
+                          storage.write(key: "isFirstRun", value: "false");
+                          Navigator.of(context)
+                              .pushReplacementNamed("/welcomescreen");
                         }
                         _pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
@@ -136,4 +141,3 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 }
-

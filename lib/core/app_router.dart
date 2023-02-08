@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/features/authentication/screens/login_screen.dart';
 import 'package:todolist_app_flutter/features/authentication/screens/register_screen.dart';
+
 import 'package:todolist_app_flutter/features/introduction/screens/onboarding_screen.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/splashscreen.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/welcome_screen.dart';
@@ -21,7 +22,7 @@ class AppRouter {
         return LoginScreen.route();
       case RegisterScreen.routeName:
         return RegisterScreen.route();
-        case MainScreen.routeName:
+      case MainScreen.routeName:
         return MainScreen.route();
 
       default:
@@ -30,7 +31,7 @@ class AppRouter {
   }
 
   static errorRoute() {
-    MaterialPageRoute(
+    return MaterialPageRoute(
         settings: const RouteSettings(name: "errorRoute"),
         builder: (_) => const Scaffold(
               body: Center(child: Text("Invalid Route")),
