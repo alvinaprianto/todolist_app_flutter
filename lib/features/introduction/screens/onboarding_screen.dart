@@ -128,7 +128,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                           width: 100,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
-                            color: colorButton,
+                            color: primaryColor,
                           ),
                           child: Center(
                             child: Text('Next',

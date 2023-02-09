@@ -5,6 +5,7 @@ import 'package:todolist_app_flutter/features/authentication/screens/register_sc
 import 'package:todolist_app_flutter/features/introduction/screens/onboarding_screen.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/splashscreen.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/welcome_screen.dart';
+import 'package:todolist_app_flutter/features/task/screens/home_screen.dart';
 
 import 'main_screen.dart';
 
@@ -24,6 +25,8 @@ class AppRouter {
         return RegisterScreen.route();
       case MainScreen.routeName:
         return MainScreen.route();
+      case HomeScreen.routeName:
+        return HomeScreen.route();
 
       default:
         return errorRoute();

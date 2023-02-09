@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderSide: const BorderSide(color: Colors.grey)),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(4),
-                            borderSide: const BorderSide(color: colorButton)),
+                            borderSide: const BorderSide(color: primaryColor)),
                       ),
                       validator: ((value) {
                         if (value!.isEmpty) {
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderSide: const BorderSide(color: Colors.grey)),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(4),
-                            borderSide: const BorderSide(color: colorButton)),
+                            borderSide: const BorderSide(color: primaryColor)),
                       ),
                       validator: ((value) {
                         if (value!.isEmpty) {
@@ -179,9 +179,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       height: 50,
                       decoration: BoxDecoration(
-                          border: Border.all(color: colorButton, width: 2),
+                          border: Border.all(color: primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(4),
-                          color: colorButton),
+                          color: primaryColor),
                       child: Center(
                         child: Text(
                           'Login',
@@ -228,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       height: 50,
                       decoration: BoxDecoration(
-                          border: Border.all(color: colorButton, width: 2),
+                          border: Border.all(color: primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(4),
                           color: Colors.black),
                       child: Row(

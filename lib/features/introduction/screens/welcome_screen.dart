@@ -58,7 +58,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               height: 50,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4), color: colorButton),
+                  borderRadius: BorderRadius.circular(4), color: primaryColor),
               child: Center(
                 child: Text(
                   'LOGIN',
@@ -77,7 +77,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               height: 50,
               decoration: BoxDecoration(
-                  border: Border.all(color: colorButton, width: 2),
+                  border: Border.all(color: primaryColor, width: 2),
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.black),
               child: Center(
