@@ -7,6 +7,7 @@ import 'package:todolist_app_flutter/features/introduction/screens/splashscreen.
 import 'package:todolist_app_flutter/features/introduction/screens/welcome_screen.dart';
 import 'package:todolist_app_flutter/features/task/screens/home_screen.dart';
 
+import '../features/user/screens/profile_screen.dart';
 import 'main_screen.dart';
 
 class AppRouter {
@@ -27,6 +28,8 @@ class AppRouter {
         return MainScreen.route();
       case HomeScreen.routeName:
         return HomeScreen.route();
+      case ProfileScreen.routeName:
+        return ProfileScreen.route();
 
       default:
         return errorRoute();

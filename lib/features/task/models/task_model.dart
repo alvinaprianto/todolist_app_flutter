@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
+
+import 'category_model.dart';
+
 class TaskModel {
   String? title;
   String? desc;
   String? date;
-  String? tag;
+  CategoryModel? tag;
   int? priority;
 
   TaskModel({this.title, this.desc, this.date, this.tag, this.priority});

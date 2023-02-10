@@ -9,6 +9,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
+import 'package:todolist_app_flutter/features/user/screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -34,32 +35,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Home",
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        centerTitle: true,
-        actions: [
-          ClipRRect(
-              borderRadius: BorderRadius.circular(90),
-              child: FirebaseAuth.instance.currentUser!.photoURL != null
-                  ? Image.network(
-                      FirebaseAuth.instance.currentUser!.photoURL!,
-                      height: 38,
-                      width: 38,
-                    )
-                  : const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.black,
-                      ))),
-          const SizedBox(
-            width: 20,
-          )
-        ],
-      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
@@ -76,8 +51,8 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   IconButton(
                     iconSize: 30.0,
-                    icon: Image(
-                      image: const Svg(icNavHome, size: Size(25, 25)),
+                    icon: Icon(
+                      Icons.home_outlined,
                       color: _currentIndex == 0 ? primaryColor : Colors.white,
                     ),
                     onPressed: () {
@@ -195,9 +170,7 @@ class _MainScreenState extends State<MainScreen> {
           Center(
             child: Text('Empty Body 2'),
           ),
-          Center(
-            child: Text('Empty Body 3'),
-          )
+          ProfileScreen()
         ], // Comment this if you need to use Swipe.
       ),
       floatingActionButton: SizedBox(
@@ -208,14 +181,12 @@ class _MainScreenState extends State<MainScreen> {
             backgroundColor: primaryColor,
             onPressed: () async {
               Map<String, dynamic>? result = await addTask(context);
-              print("result $result");
 
               DateTime now = DateTime.now();
               var nowDate =
-                  '${DateFormat('EEEE', 'id_ID').format(now)}, ${DateFormat('dd MMMM yyyy', 'id_ID').format(now)}';
+                  '${DateFormat('EE', null).format(now)}, ${DateFormat('dd/MM/yy', 'id_ID').format(now)}';
               if (result != null && result["isSend"] == true) {
                 TaskModel model = result["model"];
-                print(model);
                 _db
                     .child(_auth.currentUser!.email!
                         .substring(0, _auth.currentUser!.email!.indexOf("@")))
@@ -224,7 +195,12 @@ class _MainScreenState extends State<MainScreen> {
                   "title": (model.title ?? "Untitled"),
                   "desc": (model.desc ?? "Undescription"),
                   "date": (model.date ?? "Undefined"),
-                  "tag": (model.tag ?? "Undefined"),
+                  "tag": {
+                    "title": model.tag!.title,
+                    "img": model.tag!.img,
+                    "color":
+                        "${model.tag!.color!.alpha}${model.tag!.color!.red}${model.tag!.color!.green}${model.tag!.color!.blue}"
+                  },
                   "priority": (model.priority ?? "Undefined"),
                 });
               }
@@ -259,7 +235,7 @@ class _MainScreenState extends State<MainScreen> {
             selectedDate = selected;
 
             selectedDateString =
-                '${DateFormat('EEEE', 'id_ID').format(selectedDate)}, ${DateFormat('dd MMMM yyyy', 'id_ID').format(selectedDate)} ${value}';
+                '${DateFormat('EEE', null).format(selectedDate)}, ${DateFormat('dd-MM-yy', 'id_ID').format(selectedDate)} $value';
           });
         }
       });
@@ -288,10 +264,9 @@ class _MainScreenState extends State<MainScreen> {
     return selectedString;
   }
 
-  Future<String?> addCategory() async {
+  Future<CategoryModel?> addCategory() async {
     List<CategoryModel> categories = CategoryModel.generateList();
-    var isSelectedCategory = false;
-    int selectedIndex = 0;
+    int? selectedIndex;
     return await showDialog(
         context: context,
         builder: (context) => StatefulBuilder(
@@ -327,13 +302,9 @@ class _MainScreenState extends State<MainScreen> {
                           itemBuilder: ((context, index) {
                             return GestureDetector(
                               onTap: () {
-                                print("${categories[index]}");
-                                print(index);
-
                                 setState(() {
                                   selectedIndex = index;
                                 });
-                                print(isSelectedCategory);
                               },
                               child: Column(
                                   mainAxisAlignment:
@@ -344,9 +315,11 @@ class _MainScreenState extends State<MainScreen> {
                                       decoration: BoxDecoration(
                                           color: (() {
                                             if (selectedIndex == index) {
-                                              return Colors.red;
+                                              return categories[index]
+                                                  .color!
+                                                  .withAlpha(160);
                                             } else {
-                                              return Colors.green;
+                                              return categories[index].color;
                                             }
                                           }()),
                                           borderRadius:
@@ -358,7 +331,7 @@ class _MainScreenState extends State<MainScreen> {
                                     ),
                                     Text(
                                       categories[index].title!,
-                                      style: TextStyle(fontSize: 12),
+                                      style: const TextStyle(fontSize: 12),
                                     )
                                   ]),
                             );
@@ -368,11 +341,15 @@ class _MainScreenState extends State<MainScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: ElevatedButton(
                         style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(primaryColor),
                             minimumSize: MaterialStateProperty.all(
                                 const Size(double.infinity, 50))),
                         onPressed: () {
-                          Navigator.of(context)
-                              .pop(categories[selectedIndex].title);
+                          Navigator.of(context).pop(selectedIndex != null
+                              ? categories[selectedIndex!]
+                              : null);
+                          print(categories[selectedIndex!].color);
                         },
                         child: const Text("Add Category"),
                       ),
@@ -384,9 +361,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<int?> addPriority() async {
-    List<CategoryModel> categories = CategoryModel.generateList();
-    var isSelectedCategory = false;
-    int selectedIndex = 0;
+    int? selectedIndex;
     return await showDialog(
         context: context,
         builder: (context) => StatefulBuilder(
@@ -422,33 +397,30 @@ class _MainScreenState extends State<MainScreen> {
                           itemBuilder: ((context, index) {
                             return GestureDetector(
                               onTap: () {
-                                print("${categories[index]}");
-                                print(index);
-
                                 setState(() {
                                   selectedIndex = index;
                                 });
-                                print(isSelectedCategory);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                     color: (() {
                                       if (selectedIndex == index) {
-                                        return Colors.red;
+                                        return primaryColor;
                                       } else {
-                                        return Colors.green;
+                                        return const Color.fromRGBO(0, 0, 0, 1)
+                                            .withOpacity(0.8);
                                       }
                                     }()),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Column(
                                   children: [
-                                    Image(
+                                    const Image(
                                       image: Svg(icFlag),
                                     ),
                                     Text(
-                                      index.toString(),
-                                      style: TextStyle(fontSize: 12),
+                                      (index + 1).toString(),
+                                      style: const TextStyle(fontSize: 12),
                                     )
                                   ],
                                 ),
@@ -458,14 +430,41 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
-                                const Size(double.infinity, 50))),
-                        onPressed: () {
-                          Navigator.of(context).pop(selectedIndex);
-                        },
-                        child: const Text("Save"),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  minimumSize: MaterialStateProperty.all(
+                                      const Size(double.infinity, 50))),
+                              onPressed: () {
+                                Navigator.of(context).pop(selectedIndex);
+                              },
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(color: primaryColor),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor:
+                                      MaterialStateProperty.all(primaryColor),
+                                  minimumSize: MaterialStateProperty.all(
+                                      const Size(double.infinity, 50))),
+                              onPressed: () {
+                                Navigator.of(context).pop(selectedIndex);
+                              },
+                              child: const Text("Save"),
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   ],
@@ -478,7 +477,7 @@ class _MainScreenState extends State<MainScreen> {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descController = TextEditingController();
     String? selectedDate;
-    String? selectedCategory;
+    CategoryModel? selectedCategory;
     int? selectedPriority;
     var isSend = false;
     return await showModalBottomSheet(
@@ -560,7 +559,6 @@ class _MainScreenState extends State<MainScreen> {
                       IconButton(
                           onPressed: () async {
                             var result = await addCategory();
-                            print("category $result");
                             if (result != null) {
                               setState(() {
                                 selectedCategory = result;
@@ -568,7 +566,7 @@ class _MainScreenState extends State<MainScreen> {
                             }
                           },
                           icon: Image(
-                              image: Svg(
+                              image: const Svg(
                                 icTag,
                                 size: Size(25, 25),
                               ),
@@ -585,7 +583,7 @@ class _MainScreenState extends State<MainScreen> {
                             }
                           },
                           icon: Image(
-                              image: Svg(icFlag, size: Size(25, 25)),
+                              image: const Svg(icFlag, size: Size(25, 25)),
                               color: selectedPriority == null
                                   ? Colors.white
                                   : primaryColor)),
