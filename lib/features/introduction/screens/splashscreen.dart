@@ -31,7 +31,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Future isFirstRun() async {
     const FlutterSecureStorage storage = FlutterSecureStorage();
     String? result = await storage.read(key: "isFirstRun");
+    print(result);
     if (result == null) {
+      print(result);
       Timer(const Duration(seconds: 3), () {
         Navigator.pushNamed(context, OnBoardingScreen.routeName);
       });

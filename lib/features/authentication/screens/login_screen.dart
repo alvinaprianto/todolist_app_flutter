@@ -7,7 +7,7 @@ import 'package:todolist_app_flutter/features/authentication/cubit/authenticatio
 import '../../../core/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   static const routeName = '/loginscreen';
@@ -19,19 +19,12 @@ class LoginScreen extends StatefulWidget {
   }
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  bool isHidePassword = true;
-  bool isHideConfirmPassword = true;
-
-  @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey();
+    bool isHidePassword = true;
+
     return Scaffold(
       appBar: AppBar(
           leading: IconButton(
@@ -70,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
             child: SingleChildScrollView(
                 child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -98,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           .textTheme
                           .bodyMedium!
                           .copyWith(fontSize: 16),
-                      controller: _emailController,
+                      controller: emailController,
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(4),
@@ -129,49 +122,52 @@ class _LoginScreenState extends State<LoginScreen> {
                           .copyWith(fontSize: 16),
                     ),
                   ),
-                  SizedBox(
-                    height: 50,
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.visiblePassword,
-                      obscureText: isHidePassword,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontSize: 16),
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                            onPressed: (() {
-                              setState(() {
-                                isHidePassword = !isHidePassword;
-                              });
-                            }),
-                            icon: Icon(Icons.remove_red_eye)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(4),
-                            borderSide: const BorderSide(color: Colors.grey)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(4),
-                            borderSide: const BorderSide(color: primaryColor)),
+                  StatefulBuilder(builder: (context, setState) {
+                    return SizedBox(
+                      height: 50,
+                      child: TextFormField(
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: isHidePassword,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(fontSize: 16),
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                              onPressed: (() {
+                                setState(() {
+                                  isHidePassword = !isHidePassword;
+                                });
+                              }),
+                              icon: Icon(Icons.remove_red_eye)),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: const BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide:
+                                  const BorderSide(color: primaryColor)),
+                        ),
+                        validator: ((value) {
+                          if (value!.isEmpty) {
+                            return "The password field is required";
+                          } else if (value.length < 6) {
+                            return "Password must be at least 6 character";
+                          }
+                          return null;
+                        }),
                       ),
-                      validator: ((value) {
-                        if (value!.isEmpty) {
-                          return "The password field is required";
-                        } else if (value.length < 6) {
-                          return "Password must be at least 6 character";
-                        }
-                        return null;
-                      }),
-                    ),
-                  ),
+                    );
+                  }),
                   const SizedBox(width: 0.0, height: 30),
                   GestureDetector(
                     onTap: () {
                       context.read<AuthenticationCubit>().signInEmailPassword(
                           context,
-                          _emailController.text,
-                          _passwordController.text);
+                          emailController.text,
+                          passwordController.text);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(

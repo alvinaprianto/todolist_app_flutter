@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
-import 'package:todolist_app_flutter/features/introduction/screens/welcome_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../widgets/onboarding_widget.dart';
 
@@ -38,11 +35,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final FlutterSecureStorage storage = FlutterSecureStorage();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _pageController.dispose();
     super.dispose();
   }

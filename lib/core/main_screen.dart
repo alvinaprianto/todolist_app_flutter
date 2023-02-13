@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:todolist_app_flutter/features/task/models/category_model.dart';
-import 'package:todolist_app_flutter/features/task/models/task_model.dart';
+
 import 'package:todolist_app_flutter/features/task/screens/home_screen.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:todolist_app_flutter/features/user/screens/profile_screen.dart';
+
+import '../features/task/models/category.dart';
+import '../features/task/models/task.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -27,7 +28,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  PageController _myPage = PageController(initialPage: 0);
+  final PageController _myPage = PageController(initialPage: 0);
   int _currentIndex = 0;
   final _db = FirebaseDatabase.instance.ref("ToDo");
   final _auth = FirebaseAuth.instance;
@@ -171,7 +172,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Text('Empty Body 2'),
           ),
           ProfileScreen()
-        ], // Comment this if you need to use Swipe.
+        ],
       ),
       floatingActionButton: SizedBox(
         height: 65.0,
@@ -183,25 +184,29 @@ class _MainScreenState extends State<MainScreen> {
               Map<String, dynamic>? result = await addTask(context);
 
               DateTime now = DateTime.now();
-              var nowDate =
-                  '${DateFormat('EE', null).format(now)}, ${DateFormat('dd/MM/yy', 'id_ID').format(now)}';
+
+              var nowDate = now.formatDate();
+
               if (result != null && result["isSend"] == true) {
-                TaskModel model = result["model"];
+                Task model = result["model"];
                 _db
                     .child(_auth.currentUser!.email!
                         .substring(0, _auth.currentUser!.email!.indexOf("@")))
                     .child(model.date ?? nowDate)
                     .set({
-                  "title": (model.title ?? "Untitled"),
-                  "desc": (model.desc ?? "Undescription"),
-                  "date": (model.date ?? "Undefined"),
-                  "tag": {
-                    "title": model.tag!.title,
-                    "img": model.tag!.img,
-                    "color":
-                        "${model.tag!.color!.alpha}${model.tag!.color!.red}${model.tag!.color!.green}${model.tag!.color!.blue}"
-                  },
-                  "priority": (model.priority ?? "Undefined"),
+                  "title": (model.title != "" ? model.title : "Untitled"),
+                  "desc":
+                      (model.description != "" ? model.description : "null"),
+                  "date": (model.date ?? nowDate),
+                  "tag": model.category != null
+                      ? {
+                          "title": model.category!.title,
+                          "img": model.category!.img,
+                          "color": model.category!.colorHex
+                        }
+                      : "null",
+                  "priority": (model.priority ?? "null"),
+                  "is_complete": model.isComplete
                 });
               }
             },
@@ -234,8 +239,7 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             selectedDate = selected;
 
-            selectedDateString =
-                '${DateFormat('EEE', null).format(selectedDate)}, ${DateFormat('dd-MM-yy', 'id_ID').format(selectedDate)} $value';
+            selectedDateString = selectedDate.formatDate();
           });
         }
       });
@@ -264,8 +268,8 @@ class _MainScreenState extends State<MainScreen> {
     return selectedString;
   }
 
-  Future<CategoryModel?> addCategory() async {
-    List<CategoryModel> categories = CategoryModel.generateList();
+  Future<Category?> addCategory() async {
+    List<Category> categories = Category.generateList();
     int? selectedIndex;
     return await showDialog(
         context: context,
@@ -292,7 +296,7 @@ class _MainScreenState extends State<MainScreen> {
                       height: MediaQuery.of(context).size.height - 300,
                       width: MediaQuery.of(context).size.width,
                       child: GridView.builder(
-                          itemCount: CategoryModel.generateList().length,
+                          itemCount: Category.generateList().length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                   mainAxisSpacing: 20,
@@ -315,22 +319,26 @@ class _MainScreenState extends State<MainScreen> {
                                       decoration: BoxDecoration(
                                           color: (() {
                                             if (selectedIndex == index) {
-                                              return categories[index]
-                                                  .color!
-                                                  .withAlpha(160);
+                                              return Color(int.parse(
+                                                      categories[index]
+                                                          .colorHex,
+                                                      radix: 16))
+                                                  .withOpacity(0.6);
                                             } else {
-                                              return categories[index].color;
+                                              return Color(int.parse(
+                                                  categories[index].colorHex,
+                                                  radix: 16));
                                             }
                                           }()),
                                           borderRadius:
                                               BorderRadius.circular(12)),
                                       child: Center(
                                           child: Image(
-                                        image: Svg(categories[index].img!),
+                                        image: Svg(categories[index].img),
                                       )),
                                     ),
                                     Text(
-                                      categories[index].title!,
+                                      categories[index].title,
                                       style: const TextStyle(fontSize: 12),
                                     )
                                   ]),
@@ -349,7 +357,7 @@ class _MainScreenState extends State<MainScreen> {
                           Navigator.of(context).pop(selectedIndex != null
                               ? categories[selectedIndex!]
                               : null);
-                          print(categories[selectedIndex!].color);
+                          // print(categories[selectedIndex!].color);
                         },
                         child: const Text("Add Category"),
                       ),
@@ -459,7 +467,7 @@ class _MainScreenState extends State<MainScreen> {
                                   minimumSize: MaterialStateProperty.all(
                                       const Size(double.infinity, 50))),
                               onPressed: () {
-                                Navigator.of(context).pop(selectedIndex);
+                                Navigator.of(context).pop(selectedIndex! + 1);
                               },
                               child: const Text("Save"),
                             ),
@@ -477,7 +485,7 @@ class _MainScreenState extends State<MainScreen> {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descController = TextEditingController();
     String? selectedDate;
-    CategoryModel? selectedCategory;
+    Category? selectedCategory;
     int? selectedPriority;
     var isSend = false;
     return await showModalBottomSheet(
@@ -590,12 +598,13 @@ class _MainScreenState extends State<MainScreen> {
                       const Spacer(),
                       IconButton(
                           onPressed: () {
-                            TaskModel model = TaskModel(
+                            Task model = Task(
                                 title: titleController.text,
-                                desc: descController.text,
+                                description: descController.text,
                                 date: selectedDate,
-                                tag: selectedCategory,
-                                priority: selectedPriority);
+                                category: selectedCategory,
+                                priority: selectedPriority,
+                                isComplete: false);
                             model.toJson();
                             setState(() {
                               isSend = true;
@@ -611,5 +620,11 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ));
+  }
+}
+
+extension Format on DateTime {
+  String formatDate() {
+    return DateFormat("EEE, dd-MM-yy hh:mm:ss", null).format(this);
   }
 }

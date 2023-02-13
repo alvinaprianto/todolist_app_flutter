@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 import '../widgets/custom_section_profile.dart';
 import '../widgets/custom_section_widget_profile.dart';
 
@@ -139,7 +139,11 @@ class ProfileScreen extends StatelessWidget {
               height: 12,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                GoogleSignIn().disconnect();
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacementNamed("/loginscreen");
+              },
               child: Row(
                 children: const [
                   Icon(

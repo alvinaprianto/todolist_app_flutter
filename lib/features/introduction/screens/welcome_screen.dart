@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
-import 'package:todolist_app_flutter/features/authentication/screens/login_screen.dart';
-import 'package:todolist_app_flutter/features/authentication/screens/register_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   static const routeName = '/welcomescreen';
@@ -16,16 +13,6 @@ class WelcomeScreen extends StatefulWidget {
   }
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Padding(
@@ -34,7 +21,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Welcome to UpTodo',
+            'Welcome to App Todo',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleSmall,
           ),
