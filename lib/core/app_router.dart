@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/features/authentication/screens/login_screen.dart';
 import 'package:todolist_app_flutter/features/authentication/screens/register_screen.dart';
+import 'package:todolist_app_flutter/features/calendar/screens/calendar_screen.dart';
 
 import 'package:todolist_app_flutter/features/introduction/screens/onboarding_screen.dart';
 import 'package:todolist_app_flutter/features/introduction/screens/splashscreen.dart';
@@ -30,6 +31,8 @@ class AppRouter {
         return HomeScreen.route();
       case ProfileScreen.routeName:
         return ProfileScreen.route();
+      case CalendarScreen.routeName:
+        return CalendarScreen.route();
 
       default:
         return errorRoute();

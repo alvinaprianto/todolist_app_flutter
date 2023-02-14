@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -110,13 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         });
 
                         if (searchText != "") {
-                          print(catatanList.where(
-                            (element) {
-                              return element["title"]
-                                  .toString()
-                                  .contains(searchText);
-                            },
-                          ).toList());
+                          log(catatanList
+                              .where(
+                                (element) {
+                                  return element["title"]
+                                      .toString()
+                                      .contains(searchText);
+                                },
+                              )
+                              .toList()
+                              .toString());
                           List<Map<String, dynamic>> searchCatatanList = [];
                           searchCatatanList.addAll(catatanList.where(
                             (element) {
@@ -127,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ));
                           return (snapshot.connectionState ==
                                   ConnectionState.waiting)
-                              ? Center(child: CircularProgressIndicator())
+                              ? const Center(child: CircularProgressIndicator())
                               : ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: searchCatatanList.length,
@@ -351,6 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   children: [
                     FirebaseAnimatedList(
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       query: pathDB.orderByChild("is_complete").equalTo(true),
                       itemBuilder: ((context, snapshot, animation, index) {
@@ -582,6 +588,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   children: [
                     FirebaseAnimatedList(
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       query: pathDB.orderByChild("is_complete").equalTo(false),
                       itemBuilder: ((context, snapshot, animation, index) {

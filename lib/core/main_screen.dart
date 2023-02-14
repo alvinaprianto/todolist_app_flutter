@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app_flutter/core/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:todolist_app_flutter/features/calendar/screens/calendar_screen.dart';
 
 import 'package:todolist_app_flutter/features/task/screens/home_screen.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
@@ -9,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:todolist_app_flutter/features/user/screens/profile_screen.dart';
 
+import '../features/focus/screens/focus_screen.dart';
 import '../features/task/models/category.dart';
 import '../features/task/models/task.dart';
 
@@ -165,12 +167,8 @@ class _MainScreenState extends State<MainScreen> {
         physics: const NeverScrollableScrollPhysics(),
         children: const <Widget>[
           HomeScreen(),
-          Center(
-            child: Text('Empty Body 1'),
-          ),
-          Center(
-            child: Text('Empty Body 2'),
-          ),
+          CalendarScreen(),
+          FocusScreen(),
           ProfileScreen()
         ],
       ),
